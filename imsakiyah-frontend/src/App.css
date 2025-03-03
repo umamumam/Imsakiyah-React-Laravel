@@ -3,7 +3,16 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background-color: #f5f5f5;
 }
+
+/* body {
+  background-image: url("./assets/bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: auto;
+} */
 
 .logo {
   height: 6em;
@@ -40,3 +49,59 @@
 .read-the-docs {
   color: #888;
 }
+.container {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.MuiSelect-root {
+  margin-bottom: 16px;
+}
+
+.MuiButton-root {
+  margin-bottom: 16px;
+}
+
+.jadwal-container {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+th {
+  background-color: #f4f4f4;
+  border-bottom: 2px solid #ddd;
+}
+
+td {
+  border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+table th, table td {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  table th, table td {
+    font-size: 14px;
+  }
+}
+
+

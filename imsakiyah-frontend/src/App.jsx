@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Typography, Select, MenuItem, Button, CircularProgress } from "@mui/material";
-
+import {
+  Container,
+  Typography,
+  Select,
+  MenuItem,
+  Button,
+  CircularProgress,
+  Box,
+} from "@mui/material";
+import "./App.css";
 const API_BASE = "http://127.0.0.1:8000/api";
 
 function App() {
@@ -34,53 +42,138 @@ function App() {
     if (!selectedProvinsi || !selectedKabupaten) return;
     setLoading(true);
     axios
-      .post(`${API_BASE}/jadwal`, { provinsi: selectedProvinsi, kabkota: selectedKabupaten })
+      .post(`${API_BASE}/jadwal`, {
+        provinsi: selectedProvinsi,
+        kabkota: selectedKabupaten,
+      })
       .then((res) => {
-        setJadwal(res.data.data);
+        setJadwal(res.data.data[0]?.imsakiyah || []); // Mengambil jadwal dari imsakiyah
         setLoading(false);
       })
       .catch(() => setLoading(false));
   };
 
   return (
-    <Container sx={{ textAlign: "center", mt: 5 }}>
-      <Typography variant="h4">Jadwal Imsakiyah</Typography>
+    <Container className="container">
+      {/* Judul otomatis */}
+      <Typography variant="h4" sx={{ mb: 3 }}>
+        Jadwal Imsakiyah 2025 (1446 Hijriah){" "}
+        {selectedKabupaten ? `- ${selectedKabupaten}` : ""}
+      </Typography>
+      <Typography variant="h6" sx={{ mb: 3 }}>
+        Provinsi: {selectedProvinsi || "Pilih Provinsi"} - Kota/Kabupaten:{" "}
+        {selectedKabupaten || "Pilih Kabupaten/Kota"}
+      </Typography>
+      <Typography variant="body1" sx={{ mb: 3 }}>
+        Berikut ini adalah Jadwal Imsakiyah 2025 (1446 Hijriah). Sumber dari
+        data pada API ini adalah Bimas Islam Kemenag RI.
+      </Typography>
 
-      <Select fullWidth value={selectedProvinsi} onChange={(e) => setSelectedProvinsi(e.target.value)} sx={{ mt: 2 }}>
-        <MenuItem value="">Pilih Provinsi</MenuItem>
+      {/* Dropdown Pilih Provinsi */}
+      <Select
+        fullWidth
+        value={selectedProvinsi}
+        onChange={(e) => setSelectedProvinsi(e.target.value)}
+        displayEmpty
+      >
+        <MenuItem value="" disabled>
+          Pilih Provinsi
+        </MenuItem>
         {provinsi.map((prov) => (
-          <MenuItem key={prov} value={prov}>{prov}</MenuItem>
+          <MenuItem key={prov} value={prov}>
+            {prov}
+          </MenuItem>
         ))}
       </Select>
 
-      <Button variant="contained" sx={{ mt: 2 }} onClick={fetchKabupaten}>
+      {/* Tombol Ambil Kabupaten/Kota */}
+      <Button
+        variant="contained"
+        onClick={fetchKabupaten}
+        fullWidth
+        disabled={!selectedProvinsi}
+        sx={{ mt: 2 }}
+      >
         Ambil Kabupaten/Kota
       </Button>
 
+      {/* Dropdown Pilih Kabupaten/Kota */}
       {kabupaten.length > 0 && (
-        <Select fullWidth value={selectedKabupaten} onChange={(e) => setSelectedKabupaten(e.target.value)} sx={{ mt: 2 }}>
-          <MenuItem value="">Pilih Kabupaten/Kota</MenuItem>
+        <Select
+          fullWidth
+          value={selectedKabupaten}
+          onChange={(e) => setSelectedKabupaten(e.target.value)}
+          displayEmpty
+          sx={{ mt: 2 }}
+        >
+          <MenuItem value="" disabled>
+            Pilih Kabupaten/Kota
+          </MenuItem>
           {kabupaten.map((kab) => (
-            <MenuItem key={kab} value={kab}>{kab}</MenuItem>
+            <MenuItem key={kab} value={kab}>
+              {kab}
+            </MenuItem>
           ))}
         </Select>
       )}
 
+      {/* Tombol Ambil Jadwal */}
       {selectedKabupaten && (
-        <Button variant="contained" sx={{ mt: 2 }} onClick={fetchJadwal}>
+        <Button
+          variant="contained"
+          onClick={fetchJadwal}
+          fullWidth
+          sx={{ mt: 2 }}
+        >
           Ambil Jadwal
         </Button>
       )}
 
-      {loading && <CircularProgress sx={{ mt: 2 }} />}
+      {/* Loading Indicator */}
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
 
+      {/* Menampilkan Jadwal Imsakiyah */}
       {jadwal && (
-        <Container sx={{ mt: 4 }}>
-          <Typography variant="h5">Jadwal {selectedKabupaten}</Typography>
-          {Object.entries(jadwal).map(([key, value]) => (
-            <Typography key={key}>{key}: {value}</Typography>
-          ))}
-        </Container>
+        <Box className="jadwal-container" sx={{ mt: 4 }}>
+          <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
+            Jadwal Imsakiyah - {selectedKabupaten}
+          </Typography>
+
+          <Box sx={{ overflowX: "auto", borderRadius: "8px", boxShadow: 2 }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal</th>
+                  <th>Imsak</th>
+                  <th>Subuh</th>
+                  <th>Dzuhur</th>
+                  <th>Ashar</th>
+                  <th>Maghrib</th>
+                  <th>Isya</th>
+                </tr>
+              </thead>
+              <tbody>
+                {jadwal.map((item, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{item.tanggal} Ramadhan</td>
+                    <td>{item.imsak}</td>
+                    <td>{item.subuh}</td>
+                    <td>{item.dzuhur}</td>
+                    <td>{item.ashar}</td>
+                    <td>{item.maghrib}</td>
+                    <td>{item.isya}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Box>
+        </Box>
       )}
     </Container>
   );
